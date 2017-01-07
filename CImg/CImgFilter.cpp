@@ -1,6 +1,6 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * This file is part of openfx-misc <https://github.com/devernay/openfx-misc>,
- * Copyright (C) 2013-2016 INRIA
+ * Copyright (C) 2013-2017 INRIA
  *
  * openfx-misc is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,15 @@
 
 using namespace OFX;
 
-#ifdef HAVE_THREAD_LOCAL
+#if defined(HAVE_THREAD_LOCAL)
 thread_local ImageEffect *tls::gImageEffect = 0;
-
+#elif defined(HAVE_PTHREAD)
+#include <assert.h>
+#include <pthread.h>
+pthread_key_t tls::gImageEffect_key;
+pthread_once_t tls::gImageEffect_once = PTHREAD_ONCE_INIT;
 #endif
+
 
 #define kParamPremultChanged "premultChanged"
 
