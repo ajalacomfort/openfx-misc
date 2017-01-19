@@ -1701,10 +1701,10 @@ DistortionPlugin::getDistortionModel(const OfxRectI& format, const OfxPointD& re
         break;
     }
     case eDistortionModelPFBarrel: {
-        double par = 1.;
-        if (_srcClip) {
-            par = _srcClip->getPixelAspectRatio();
-        }
+        //double par = 1.;
+        //if (_srcClip) {
+        //    par = _srcClip->getPixelAspectRatio();
+        //}
         double c3 = _pfC3->getValueAtTime(time);
         double c5 = _pfC5->getValueAtTime(time);
         double xp, yp;
@@ -2314,8 +2314,10 @@ DistortionPlugin::setupAndProcess(DistortionProcessorBase &processor,
         vScale *= args.renderScale.y;
     }
     OfxRectI format = {0, 1, 0, 1};
-    double par = 1.;
-    getLensDistortionFormat(time, args.renderScale, &format, &par);
+    if (_plugin == eDistortionPluginLensDistortion) {
+        double par = 1.;
+        getLensDistortionFormat(time, args.renderScale, &format, &par);
+    }
 
     DirectionEnum direction = _direction ? (DirectionEnum)_direction->getValue() : eDirectionDistort;
     std::auto_ptr<DistortionModel> distortionModel( getDistortionModel(format, args.renderScale, time) );
@@ -3539,12 +3541,16 @@ DistortionPluginFactory<plugin, majorVersion>::describeInContext(ImageEffectDesc
                 param->appendOption(kParamFormatNTSCLabel);
                 assert(param->getNOptions() == eParamFormatPAL);
                 param->appendOption(kParamFormatPALLabel);
-                assert(param->getNOptions() == eParamFormatHD);
-                param->appendOption(kParamFormatHDLabel);
                 assert(param->getNOptions() == eParamFormatNTSC169);
                 param->appendOption(kParamFormatNTSC169Label);
                 assert(param->getNOptions() == eParamFormatPAL169);
                 param->appendOption(kParamFormatPAL169Label);
+                assert(param->getNOptions() == eParamFormatHD720);
+                param->appendOption(kParamFormatHD720Label);
+                assert(param->getNOptions() == eParamFormatHD);
+                param->appendOption(kParamFormatHDLabel);
+                assert(param->getNOptions() == eParamFormatUHD4K);
+                param->appendOption(kParamFormatUHD4KLabel);
                 assert(param->getNOptions() == eParamFormat1kSuper35);
                 param->appendOption(kParamFormat1kSuper35Label);
                 assert(param->getNOptions() == eParamFormat1kCinemascope);
@@ -3553,10 +3559,14 @@ DistortionPluginFactory<plugin, majorVersion>::describeInContext(ImageEffectDesc
                 param->appendOption(kParamFormat2kSuper35Label);
                 assert(param->getNOptions() == eParamFormat2kCinemascope);
                 param->appendOption(kParamFormat2kCinemascopeLabel);
+                assert(param->getNOptions() == eParamFormat2kDCP);
+                param->appendOption(kParamFormat2kDCPLabel);
                 assert(param->getNOptions() == eParamFormat4kSuper35);
                 param->appendOption(kParamFormat4kSuper35Label);
                 assert(param->getNOptions() == eParamFormat4kCinemascope);
                 param->appendOption(kParamFormat4kCinemascopeLabel);
+                assert(param->getNOptions() == eParamFormat4kDCP);
+                param->appendOption(kParamFormat4kDCPLabel);
                 assert(param->getNOptions() == eParamFormatSquare256);
                 param->appendOption(kParamFormatSquare256Label);
                 assert(param->getNOptions() == eParamFormatSquare512);
